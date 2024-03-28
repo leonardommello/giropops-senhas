@@ -1,11 +1,13 @@
 FROM alpine:3.19
 RUN apk update \
   && apk upgrade \
-  && apk add --no-cache python3 py3-pip redis --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing \
+  && apk add --no-cache python3 py3-pip --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing \
   && rm -rf /var/cache/apk/*
-COPY static/ templates/ app.py requirements.txt tailwind.config.js LICENCE /app/
+COPY static/ templates/ app.py requirements.txt tailwind.config.js LICENSE /app/
 WORKDIR /app
-ENV REDIS_HOST=localhost
-RUN pip install -r requirements.txt
-EXPOSE 80/tcp
-ENTRYPOINT ["flask run --host=0.0.0.0"]
+RUN python3 -m venv .env && source .env/bin/activate && pip install flask prometheus_client redis --no-cache-dir
+ENV PATH="/app/.env/bin:$PATH"
+ARG REDIS_HOST
+ENV REDIS_HOST=$REDIS_HOST
+EXPOSE 5000/tcp
+CMD ["flask", "run", "--host=0.0.0.0"]
