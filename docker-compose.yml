@@ -10,12 +10,9 @@ services:
     image: linuxtips-giropops-senhas:1.0
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
       args:
         - REDIS_HOST=redis
-      tags:
-        - "latest"
-        - "1.0"
     ports:
       - "5000:5000"
     networks:
